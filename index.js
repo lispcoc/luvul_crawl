@@ -16,7 +16,10 @@ https.get("https://chat.luvul.net/PastLogList?room_id=" + room_id, (response) =>
     response.on('end', () => { // 受信終了
         var title = rawData.match(/<title>「(.+?)」の過去ログ一覧/)[1]
         var m = rawData.match(/<a href=".+?">.+?の過去ログ/gim)
-        fs.mkdirSync(title)
+        var stat = fs.statSync(title)
+        if (!stat.isDirectory()) {
+            fs.mkdirSync(title)
+        }
         m.forEach(l => {
             l = l.replace(/&amp;/g, "&")
             var name = title + "/" + l.match(/>(.+)/)[1].replace(/[\/:]/g, "") + ".html"
