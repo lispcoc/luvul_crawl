@@ -1,5 +1,19 @@
 const https = require("https");
 const fs = require("fs");
+const parser =  require('node-html-parser');
+const { convert } = require('html-to-text');
+const options = {
+    wordwrap: 130,
+    blockTextElements: {
+        script: false
+    },
+    selectors: [
+        {
+            selector: 'hr',
+            format: 'block'
+        },
+    ]
+};
 var room_id = process.argv[2]
 console.log(room_id)
 
@@ -21,7 +35,7 @@ https.get("https://chat.luvul.net/PastLogList?room_id=" + room_id, (response) =>
         }
         m.forEach(l => {
             l = l.replace(/&amp;/g, "&")
-            var name = title + "/" + l.match(/>(.+)/)[1].replace(/[\/:]/g, "") + ".html"
+            var name = title + "/" + l.match(/>(.+)/)[1].replace(/[\/:]/g, "")
             var path = l.match(/<a href="(.+?)">/)[1]
 
             https.get("https://chat.luvul.net" + path, (response) => {
@@ -35,7 +49,10 @@ https.get("https://chat.luvul.net/PastLogList?room_id=" + room_id, (response) =>
                 let rawData = '';
                 response.on('data', (chunk) => { rawData += chunk; }); // 受信中に 'data' イベントが発生する
                 response.on('end', () => { // 受信終了
-                    fs.writeFileSync(name, rawData)
+                    fs.writeFileSync(name + ".html", rawData)
+                    let dom = parser.parse(rawData);
+                    dom.querySelectorAll('hr').forEach(x=> x.remove());
+                    fs.writeFileSync(name + ".txt", convert(dom.toString(), options))
                 })
             })
         })
