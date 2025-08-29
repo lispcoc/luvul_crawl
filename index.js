@@ -34,6 +34,7 @@ let callback = (response) =>  {
     response.on('end', () => { // 受信終了
         var title = "[" + room_id + "]" + rawData.match(/<title>「(.+?)」の過去ログ一覧/)[1]
         var m = rawData.match(/<a href=".+?">.+?の過去ログ/gim)
+        if (!m) m = []
         if (!fs.existsSync(title) || !fs.statSync(title).isDirectory()) {
             fs.mkdirSync(title)
         }
