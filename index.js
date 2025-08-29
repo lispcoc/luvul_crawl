@@ -14,10 +14,9 @@ https.get("https://chat.luvul.net/PastLogList?room_id=" + room_id, (response) =>
     let rawData = '';
     response.on('data', (chunk) => { rawData += chunk; }); // 受信中に 'data' イベントが発生する
     response.on('end', () => { // 受信終了
-        var title = rawData.match(/<title>「(.+?)」の過去ログ一覧/)[1]
+        var title = "[" + room_id + "]" + rawData.match(/<title>「(.+?)」の過去ログ一覧/)[1]
         var m = rawData.match(/<a href=".+?">.+?の過去ログ/gim)
-        var stat = fs.statSync(title)
-        if (!stat.isDirectory()) {
+        if (!fs.existsSync(title) || !fs.statSync(title).isDirectory()) {
             fs.mkdirSync(title)
         }
         m.forEach(l => {
