@@ -16,8 +16,12 @@ const options = {
 };
 var room_id = process.argv[2]
 console.log(room_id)
-
-https.get("https://chat.luvul.net/PastLogList?room_id=" + room_id, (response) => {
+let page = 0
+const url = (rid, page) => "https://chat.luvul.net/?action=PastLogList&pageFrom=" + page + "&room_id=" + rid
+const errot_callback = (e) => {
+    console.error(`Got error: ${e.message}`);
+}
+let callback = (response) =>  {
     let statusCode = response.statusCode; // HTTP ステータスコード
     if (statusCode !== 200) { // ステータスコードが 200 以外の場合はエラーを吐いて終了する
         console.error(`Request failed (status code: ${statusCode})`);
@@ -57,10 +61,24 @@ https.get("https://chat.luvul.net/PastLogList?room_id=" + room_id, (response) =>
                     fs.writeFileSync(name + ".html", dom.toString())
                     dom.querySelectorAll('hr').forEach(x=> x.remove());
                     fs.writeFileSync(name + ".txt", convert(dom.toString(), options))
+                    console.log(name)
                 })
             })
         })
+        console.log("page " + page + " done")
+        if (m.length > 0) {
+            setTimeout(() => {
+                https.get(
+                    url( room_id, page ),
+                    callback
+                ).on('error', errot_callback)
+            }, 60 * 1000)
+            page += 100
+        }
     });
-}).on('error', (e) => {
-    console.error(`Got error: ${e.message}`);
-});
+}
+
+https.get(
+    url( room_id, page ),
+    callback
+).on('error', errot_callback);
