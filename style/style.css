@@ -1,0 +1,384 @@
+@charset "utf-8";
+
+/* 注意 */
+.attention{
+	color:red;
+}
+
+.bold{
+	font-weight:bold;
+}
+
+body{
+	/* margin:0; */
+	background-color:#fff;
+}
+body, td, th{
+	line-height:130%;
+	font-size:0.92rem;
+        /* font-size:0.88rem; */
+}
+
+
+input, select, textarea{ /* font*.cssで指定 */
+	/* font-size:0.88rem; */ /* 0.834rem */
+}
+
+textarea#chat{
+	font-size:0.92rem;
+        padding: 4px;
+        margin-right:3px;
+}
+
+
+.bgcolor{
+	background-color:#fff;
+}
+
+/*
+a:link, a:active {
+	color: #f90;
+}
+a:hover, a:visited {
+	color: #f60;
+}
+a.ex:link, a.ex:active, a.ex:hover, a.ex:visited {
+	color: #0a3;
+}
+*/
+
+/*
+a:hover{
+	color:#ff44ff;
+}
+*/
+
+a.ad:hover{
+	color:#ccc;
+}
+a.ad:visited{
+	color:#ccc;
+}
+
+address{
+	font-style:normal;
+}
+
+li{
+	line-height:150%;
+}
+
+span.error {
+	color:red;
+}
+p.error span.error{
+	border:solid 1px #f00;
+	padding:4px;
+	display:inline-block;
+}
+
+table.error{
+	border:solid 1px #f00;
+}
+
+table.error td{
+	color:red;
+}
+td.error input{
+	border:solid 1px #f00;
+}
+td.error textarea{
+	border:solid 1px #f00;
+}
+td.error select{
+	border:solid 1px #f00;
+}
+.required{
+	color:red;
+}
+div.info {
+	margin: 6pt 0;
+}
+div.info span.info{
+	margin: 2pt 0;
+	border:solid 1px #ccc;
+	padding:4px;
+	display:inline-block;
+}
+
+/*
+colgroup.leftlabel{
+	text-align: right;
+	background-color: #ffeeff;
+}
+
+th{
+	padding: 6px;
+	text-align:center;
+	border:solid 1px #ddd;
+	background-color:#ffeeff;
+}
+
+td.submit{
+	padding:6px;
+	text-align:center;
+	border:solid 1px #ddd;
+	background-color:#ffeeff;
+}
+*/
+
+table.grid{
+	border:solid 1px #69f; /* #ddd */
+}
+table.grid td, table.grid th{
+	border:0;
+	border-right:solid 1px #abf;/* #ccc; */
+	border-bottom:solid 1px #abf;/* #ccc; */
+}
+
+.rule_html{
+	display:inline;
+	font-size:0.83rem;
+}
+
+hr{
+	height:1px;
+	color:#ccc;
+	display:block;
+}
+
+img{ border:0; }
+
+
+div.right_cont{
+        margin:0px; width:160px; float:left; text-align:center; padding:66px 0px 0px 22px; /* border:solid 1px; */
+}
+
+body.layout{margin:0; padding:0px; padding-left:0px; text-align:center;
+	margin-top:0px;
+	margin-bottom:0px;
+	/* background-color:#fff; */
+}
+
+div.layout_center{	width:1006px;
+	margin:0 auto;
+	padding:0px;
+	text-align:center;
+	background-color:#fff; /* 09f */
+}
+div.layout_cont{ float:left;
+	margin:0;
+	margin-left:auto; margin-right:auto;
+	padding:6px 0px; padding-left:80px;
+	background-color:#fff;
+	width:740px; /* 800px */
+	text-align:left;
+}
+
+/* 強調色 */
+/*
+.ex{
+	color:#ff44ff;
+}
+*/
+
+.sub{
+	color:#777;
+}
+
+.small{
+	font-size:0.83rem;
+}
+
+.inline{
+	display:inline;
+}
+
+.nobr{
+	white-space:nowrap;
+}
+
+.minimaru{
+	border-radius: 5px;         /* CSS3 */
+	-moz-border-radius: 5px;    /* Firefox */
+	-webkit-border-radius: 5px; /* Safari,Chrome */
+}
+
+.kadomaru{
+	border-radius: 7px;         /* CSS3 */
+	-moz-border-radius: 7px;    /* Firefox */
+	-webkit-border-radius: 7px; /* Safari,Chrome */
+}
+
+
+h4.line{
+	color:#06c;
+	border:solid #abf;
+	border-width:0 0 1px 0;
+}
+/*
+body.room{
+
+	color:#580500;
+	padding:2px 8px;
+}
+body#chatroom{
+	background-color:#fff0ff;
+}
+
+.body_room_color{
+	color:#580500;
+}
+*/
+
+/*
+h3, h4{
+	color:#06c;
+}
+*/
+
+/* ===========================================================
+ chat room
+*/
+
+/* 部屋名 */
+/*
+body.room .room_name{
+	color:#FF84B6;
+	font-size:1.17rem;
+}
+*/
+body.room div#room_name_div{
+	padding:8px 0 12px 0;
+}
+/*
+div#chatarea{
+	padding:12px 0;
+	border: solid 0px #cbc;
+	height: 500px;
+	width: auto;
+	overflow: auto;
+	margin:4px 204px 4px 0;
+	word-break: break-all;
+*/
+	/* IE only */ /*
+	scrollbar-face-color: #fff0ff;
+	scrollbar-track-color: #fff0ff;
+	scrollbar-highlight-color: #cbc;
+	scrollbar-3dlight-color: #fff0ff;
+	scrollbar-shadow-color: #cbc;
+	scrollbar-darkshadow-color: #cbc;
+	scrollbar-arrow-color: #cbc;
+}
+
+#subpane{
+	float:right;
+	border: solid 1px #cbc;
+	padding: 4px;
+	width: 209px;
+	height: 500px;
+	overflow: auto;
+}
+*/
+#chatters{
+}
+
+#chatters div #myputiprof, #chatters div #myputiprofform, div.otherputiprof{
+        padding-left:8px;
+}
+
+/* 自動更新表示 */
+/*
+body.room span#reloadspc{
+	color:#FF84B6;
+}
+
+body.room span.nowupdate{
+	color:#bF5476;
+}
+*/
+
+#namelabelEnter, #namelabelChat{
+	cursor:pointer; text-decoration:underline;
+}
+/*
+body.room fieldset{
+	border:solid 1px #cbc;
+	padding:8px;
+}
+body.room legend{
+	color:#580500;
+}
+
+body.room hr{
+	height:1px; color:#cbc; border:solid 1px #cbc; border-top:none; border-right:none; border-left:none;
+}
+body#chatroom hr{
+	height:1px; color:#dcd; border:solid 1px #dcd; border-top:none; border-right:none; border-left:none;
+}
+*/
+
+div.hello td{
+	font-size:0.88rem;
+}
+
+div#chatarea font.chatter, div#chatarea span.chatbody{
+	font-size:0.96rem; line-height:145%;
+}
+div#chatarea span.chatbody{
+	font-size:1rem; line-height:145%;
+}
+
+div#pastlog_chatarea font.chatter{
+	font-size:0.88rem; line-height:144%;
+}
+div#pastlog_chatarea span.chatbody{
+	font-size:1rem; line-height:144%;
+}
+
+span.chatter_silent_time{
+	font-size:0.75rem; white-space:nowrap;
+}
+
+div.officialroomlistline{
+	margin-top:2px;
+	margin-bottom:1px;
+	padding-top:1px;
+	padding-bottom:1px;
+}
+div.freeroomlistline{
+	margin-top:2px;
+	margin-bottom:2px;
+	padding-top:2px;
+	padding-bottom:2px;
+}
+.listroomname{
+	font-weight:bold;
+	font-size:1.04rem;
+}
+div.freeroomlistline .listroomname{
+	line-height:137%;
+}
+
+.choiusu{
+	filter:alpha(opacity=50); -moz-opacity: 0.5; opacity:0.5;
+}
+
+.usume{
+	filter:alpha(opacity=40); -moz-opacity: 0.4; opacity:0.4;
+}
+
+.chatter_block{
+        margin:0 0 3px 0;
+}
+
+div.roompr{
+        font-size:0.94rem; line-height:140%;
+}
+
+.lrom{
+        font-size:0.67rem;
+}
+.ltag{
+        font-size:0.75rem;
+}

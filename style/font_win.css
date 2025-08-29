@@ -1,0 +1,11 @@
+@charset "utf-8";
+
+body{
+        font-family: sans-serif;
+	/* font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", "BIZ UDPGothic", Meiryo, sans-serif; */
+	/* font-family:'メイリオ',Meiryo,'ＭＳ Ｐゴシック', sans-serif; */
+}
+
+input, select, textarea{
+        font-family: sans-serif;
+}

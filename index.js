@@ -49,8 +49,12 @@ https.get("https://chat.luvul.net/PastLogList?room_id=" + room_id, (response) =>
                 let rawData = '';
                 response.on('data', (chunk) => { rawData += chunk; }); // 受信中に 'data' イベントが発生する
                 response.on('end', () => { // 受信終了
-                    fs.writeFileSync(name + ".html", rawData)
+                    rawData = rawData.replaceAll('href="/style/', 'href="../style/')
                     let dom = parser.parse(rawData);
+                    dom.querySelectorAll('iframe').forEach(x=> x.remove());
+                    dom.querySelectorAll('img').forEach(x=> x.remove());
+                    dom.querySelectorAll('script').forEach(x=> x.remove());
+                    fs.writeFileSync(name + ".html", dom.toString())
                     dom.querySelectorAll('hr').forEach(x=> x.remove());
                     fs.writeFileSync(name + ".txt", convert(dom.toString(), options))
                 })
