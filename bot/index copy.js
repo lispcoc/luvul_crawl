@@ -40,7 +40,8 @@ async function sendPushbulletNotification(title, message) {
   const page = await browser.newPage();
 
   // チャットサイトにアクセス
-  await page.goto('https://chat.luvul.net/ChatRoom?room_id=420005');
+  await page.goto('https://chat.luvul.net/ChatRoom?room_id=401175');
+  //await page.goto('https://chat.luvul.net/ChatRoom?room_id=131694');
 
   // チャットコンテナのセレクタ
   const chatContainerSelector = '#chatlogarea'; // 適切なセレクタに置き換え
