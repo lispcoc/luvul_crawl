@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "html-to-text": "^9.0.5",
-    "node-html-parser": "^7.0.1"
+    "node-html-parser": "^7.0.1",
+    "puppeteer": "^24.22.3"
   }
 }
