@@ -36,7 +36,10 @@ async function sendPushbulletNotification(title, message) {
 
 (async () => {
   // ブラウザを起動
-  const browser = await puppeteer.launch({ headless: true }); // headless: true にすると非表示で動作
+  const browser = await puppeteer.launch({
+    headless: true,
+    executablePath: '/usr/bin/chromium-browser'
+  });
   const page = await browser.newPage();
 
   // チャットサイトにアクセス
