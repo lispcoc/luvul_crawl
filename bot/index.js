@@ -55,9 +55,7 @@ async function sendPushbulletNotification(title, message) {
 
   // チャットの監視
   await page.exposeFunction('onNewMessage', (message) => {
-    let r = message.search(/しました/);
-    console.log(r);
-    if (message.search(/しました/) !== -1) {
+    if (message.search(/入室しました/) !== -1 || message.search(/退室しました/) !== -1) {
         // 通知を送信
         sendPushbulletNotification('通知タイトル', message);
     }
