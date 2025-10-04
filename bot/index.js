@@ -40,58 +40,65 @@ async function sendPushbulletNotification(title, message) {
     headless: true,
     executablePath: '/usr/bin/chromium-browser'
   });
-  const page = await browser.newPage();
+  const urls = [
+    'https://chat.luvul.net/ChatRoom?room_id=401056',
+    'https://chat.luvul.net/ChatRoom?room_id=420005',
+  ];
 
-  // チャットサイトにアクセス
-  await page.goto('https://chat.luvul.net/ChatRoom?room_id=420005');
+  for (const url of urls) {
+    const page = await browser.newPage();
 
-  // チャットコンテナのセレクタ
-  const chatContainerSelector = '#chatlogarea'; // 適切なセレクタに置き換え
+    // チャットサイトにアクセス
+    await page.goto(url);
 
-  // チャットコンテナがロードされるまで待機
-  await page.waitForSelector(chatContainerSelector);
+    // チャットコンテナのセレクタ
+    const chatContainerSelector = '#chatlogarea'; // 適切なセレクタに置き換え
 
-  console.log('チャットの監視を開始します');
+    // チャットコンテナがロードされるまで待機
+    await page.waitForSelector(chatContainerSelector);
 
-  // 以前のメッセージを追跡するためのセット
-  const previousMessages = new Set();
+    console.log('チャットの監視を開始します');
 
-  // チャットの監視
-  await page.exposeFunction('onNewMessage', (message) => {
-    if (message.search(/入室しました/) !== -1 || message.search(/退室しました/) !== -1) {
-        // 通知を送信
-        sendPushbulletNotification('通知タイトル', message);
-    }
-    console.log('新しいメッセージ:', message);
-  });
+    // 以前のメッセージを追跡するためのセット
+    const previousMessages = new Set();
 
-  await page.evaluate((chatContainerSelector) => {
-    const chatContainer = document.querySelector(chatContainerSelector);
+    // チャットの監視
+    await page.exposeFunction('onNewMessage', (message) => {
+      if (message.search(/入室しました/) !== -1 || message.search(/退室しました/) !== -1) {
+          // 通知を送信
+          sendPushbulletNotification('通知タイトル', message);
+      }
+      console.log('新しいメッセージ:', message);
+    });
 
-    if (chatContainer) {
-      const previousMessages = new Set();
+    await page.evaluate((chatContainerSelector) => {
+      const chatContainer = document.querySelector(chatContainerSelector);
 
-      // MutationObserverを設定
-      const observer = new MutationObserver((mutationsList) => {
-        for (const mutation of mutationsList) {
-          if (mutation.type === 'childList') {
-            mutation.addedNodes.forEach((node) => {
-              if (node.nodeType === Node.ELEMENT_NODE) {
-                const messageText = node.textContent.trim();
-                if (!previousMessages.has(messageText)) {
-                  previousMessages.add(messageText);
-                  window.onNewMessage(messageText); // 新しいメッセージを通知
+      if (chatContainer) {
+        const previousMessages = new Set();
+
+        // MutationObserverを設定
+        const observer = new MutationObserver((mutationsList) => {
+          for (const mutation of mutationsList) {
+            if (mutation.type === 'childList') {
+              mutation.addedNodes.forEach((node) => {
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                  const messageText = node.textContent.trim();
+                  if (!previousMessages.has(messageText)) {
+                    previousMessages.add(messageText);
+                    window.onNewMessage(messageText); // 新しいメッセージを通知
+                  }
                 }
-              }
-            });
+              });
+            }
           }
-        }
-      });
+        });
 
-      // 監視を開始
-      observer.observe(chatContainer, { childList: true, subtree: true });
-    }
-  }, chatContainerSelector);
+        // 監視を開始
+        observer.observe(chatContainer, { childList: true, subtree: true });
+      }
+    }, chatContainerSelector);
+  }
 
   // スクリプトを終了しないように待機
   await new Promise(() => {});
