@@ -10,7 +10,7 @@ async function sendPushbulletNotification(title, message) {
   const url = WEBHOOK
 
   const payload = {
-    content: "<@lispcoc> " + message, // 通知の本文
+    content: "<@463235624619737090> " + message, // 通知の本文
   };
 
   try {
