@@ -41,6 +41,7 @@ async function sendPushbulletNotification(title, message) {
   const urls = [
     'https://chat.luvul.net/ChatRoom?room_id=401056',
     'https://chat.luvul.net/ChatRoom?room_id=420005',
+    'https://chat.luvul.net/ChatRoom?room_id=412404',
   ];
 
   for (const url of urls) {
