@@ -3,21 +3,20 @@ const puppeteer = require('puppeteer');
 // PushbulletのAPIキー
 const ACCESS_TOKEN = 'o.bL0CQvqzny5A9AAUSsrZeFrBwJIroRA5'; // ここにPushbulletのAPIキーを入力
 
+const WEBHOOK = "https://discord.com/api/webhooks/1428388773829283901/cv6YJP6ZJHMv1X9AM_5fasrYlkAi0BrGdu1DzBDANBt1TBcvkP8K2ZGPJcbYmKh0OcfR"
+
 // 通知を送信する関数
 async function sendPushbulletNotification(title, message) {
-  const url = 'https://api.pushbullet.com/v2/pushes';
+  const url = WEBHOOK
 
   const payload = {
-    type: 'note', // 通知のタイプ（note: 通常の通知）
-    title: title, // 通知のタイトル
-    body: message, // 通知の本文
+    content: message, // 通知の本文
   };
 
   try {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        'Access-Token': ACCESS_TOKEN,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(payload),
@@ -27,8 +26,7 @@ async function sendPushbulletNotification(title, message) {
       throw new Error(`HTTPエラー: ${response.status}`);
     }
 
-    const data = await response.json();
-    console.log('通知が送信されました:', data);
+    console.log('通知が送信されました:', message);
   } catch (error) {
     console.error('通知の送信中にエラーが発生しました:', error.message);
   }
