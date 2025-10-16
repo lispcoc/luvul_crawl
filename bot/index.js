@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 
 // PushbulletのAPIキー
-const ACCESS_TOKEN = 'o.3XaeWgYySjWXiDT5kRrKT6VOJ1nELHns'; // ここにPushbulletのAPIキーを入力
+const ACCESS_TOKEN = 'o.bL0CQvqzny5A9AAUSsrZeFrBwJIroRA5'; // ここにPushbulletのAPIキーを入力
 
 // 通知を送信する関数
 async function sendPushbulletNotification(title, message) {
