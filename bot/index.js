@@ -55,19 +55,18 @@ async function sendPushbulletNotification(title, message) {
     // チャットコンテナがロードされるまで待機
     await page.waitForSelector(chatContainerSelector);
 
-    console.log('チャットの監視を開始します');
-
     // 以前のメッセージを追跡するためのセット
     const previousMessages = new Set();
 
     // チャットの監視
     const title = await page.title()
+    console.log(title, 'チャットの監視を開始します');
     await page.exposeFunction('onNewMessage', (message) => {
       if (message.search(/入室しました/) !== -1 || message.search(/退室しました/) !== -1) {
           // 通知を送信
           sendPushbulletNotification(title, message);
       }
-      console.log('新しいメッセージ:', message);
+      console.log(title, message);
     });
 
     await page.evaluate((chatContainerSelector) => {
