@@ -10,7 +10,7 @@ async function sendPushbulletNotification(title, message) {
   const url = WEBHOOK
 
   const payload = {
-    content: "<@463235624619737090> " + message, // 通知の本文
+    content: "[" + title + "]" + message, // 通知の本文
   };
 
   try {
@@ -39,9 +39,8 @@ async function sendPushbulletNotification(title, message) {
     executablePath: '/usr/bin/chromium-browser'
   });
   const urls = [
-    'https://chat.luvul.net/ChatRoom?room_id=401056',
-    'https://chat.luvul.net/ChatRoom?room_id=420005',
-    'https://chat.luvul.net/ChatRoom?room_id=412404',
+    'https://chat.luvul.net/ChatRoom?room_id=360109',
+    'https://chat.luvul.net/ChatRoom?room_id=422155',
   ];
 
   for (const url of urls) {
@@ -62,10 +61,11 @@ async function sendPushbulletNotification(title, message) {
     const previousMessages = new Set();
 
     // チャットの監視
+    const title = await page.title()
     await page.exposeFunction('onNewMessage', (message) => {
       if (message.search(/入室しました/) !== -1 || message.search(/退室しました/) !== -1) {
           // 通知を送信
-          sendPushbulletNotification('通知タイトル', message);
+          sendPushbulletNotification(title, message);
       }
       console.log('新しいメッセージ:', message);
     });
