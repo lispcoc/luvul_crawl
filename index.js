@@ -67,14 +67,14 @@ let callback = (response) =>  {
             })
         })
         console.log("page " + page + " done")
-        if (m.length > 0) {
+        page += 100
+        if (m.length >= 100) {
             setTimeout(() => {
                 https.get(
                     url( room_id, page ),
                     callback
                 ).on('error', errot_callback)
             }, 60 * 1000)
-            page += 100
         }
     });
 }
