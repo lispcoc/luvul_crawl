@@ -59,6 +59,11 @@ let callback = (response) =>  {
                     dom.querySelectorAll('iframe').forEach(x=> x.remove());
                     dom.querySelectorAll('img').forEach(x=> x.remove());
                     dom.querySelectorAll('script').forEach(x=> x.remove());
+                    // バージョンクエリ文字列を除去して不要な差分を防ぐ
+                    dom.querySelectorAll('link[href]').forEach(el => {
+                        const href = el.getAttribute('href');
+                        if (href) el.setAttribute('href', href.replace(/\?.*$/, ''));
+                    });
                     fs.writeFileSync(name + ".html", dom.toString())
                     dom.querySelectorAll('hr').forEach(x=> x.remove());
                     fs.writeFileSync(name + ".txt", convert(dom.toString(), options))
