@@ -19,12 +19,62 @@ const errot_callback = (e) => {
     console.error(`Got error: ${e.message}`);
 }
 
-function processRoom(room_id, doneCallback) {
+const RATE_LIMIT_COUNT = 10;    // 何件ごとに待機するか
+const RATE_LIMIT_DELAY = 30000; // 待機時間(ms)
+
+// グローバル取得カウンター（全部屋共通）
+let globalFetchCount = 0;
+
+function fetchLogFile(path, name, onDone) {
+    https.get("https://chat.luvul.net" + path, (response) => {
+        if (response.statusCode !== 200) {
+            console.error(`Request failed (status code: ${response.statusCode})`);
+            response.resume();
+            onDone();
+            return;
+        }
+        response.setEncoding("utf8");
+        let rawData = '';
+        response.on('data', (chunk) => { rawData += chunk; });
+        response.on('end', () => {
+            rawData = rawData.replaceAll('href="/style/', 'href="../style/')
+            let dom = parser.parse(rawData);
+            dom.querySelectorAll('iframe').forEach(x => x.remove());
+            dom.querySelectorAll('img').forEach(x => x.remove());
+            dom.querySelectorAll('script').forEach(x => x.remove());
+            dom.querySelectorAll('link[href]').forEach(el => {
+                const href = el.getAttribute('href');
+                if (href) el.setAttribute('href', href.replace(/\?.*$/, ''));
+            });
+            fs.writeFileSync(name + ".html", dom.toString())
+            dom.querySelectorAll('hr').forEach(x => x.remove());
+            fs.writeFileSync(name + ".txt", convert(dom.toString(), options))
+            globalFetchCount++;
+            console.log(`[${globalFetchCount}] ${name}`)
+            onDone();
+        })
+    }).on('error', errot_callback);
+}
+
+function processQueue(queue, onAllDone) {
+    if (queue.length === 0) { onAllDone(); return; }
+    const { path, name } = queue.shift();
+    fetchLogFile(path, name, () => {
+        if (globalFetchCount % RATE_LIMIT_COUNT === 0) {
+            console.log(`${globalFetchCount}件取得済み、${RATE_LIMIT_DELAY / 1000}秒待機...`)
+            setTimeout(() => processQueue(queue, onAllDone), RATE_LIMIT_DELAY)
+        } else {
+            processQueue(queue, onAllDone)
+        }
+    })
+}
+
+function processRoom(room_id, doneCallback, fullMode) {
     let page = 0
+    let newestExisting = null // 部屋ディレクトリ内の最新既存ファイル名(拡張子なし)、初回ページで確定
     const callback = (response) => {
-        let statusCode = response.statusCode;
-        if (statusCode !== 200) {
-            console.error(`Request failed (status code: ${statusCode})`);
+        if (response.statusCode !== 200) {
+            console.error(`Request failed (status code: ${response.statusCode})`);
             response.resume();
             if (doneCallback) doneCallback();
             return;
@@ -39,58 +89,49 @@ function processRoom(room_id, doneCallback) {
             if (!fs.existsSync(title) || !fs.statSync(title).isDirectory()) {
                 fs.mkdirSync(title)
             }
+            // 初回ページのみ: ディレクトリ内の既存HTMLから最新ファイルを特定
+            if (!fullMode && newestExisting === null) {
+                const existingFiles = fs.readdirSync(title)
+                    .filter(f => f.endsWith('.html'))
+                    .sort()
+                newestExisting = existingFiles.length > 0
+                    ? title + '/' + existingFiles[existingFiles.length - 1].replace(/\.html$/, '')
+                    : ''
+                if (newestExisting) console.log(`newest existing: ${newestExisting}`)
+            }
+            const queue = []
             m.forEach(l => {
                 l = l.replace(/&amp;/g, "&")
                 var name = title + "/" + l.match(/>(.+)/)[1].replace(/[\/:]/g, "")
                 var path = l.match(/<a href="(.+?)">/)[1]
-
-                https.get("https://chat.luvul.net" + path, (response) => {
-                    let statusCode = response.statusCode;
-                    if (statusCode !== 200) {
-                        console.error(`Request failed (status code: ${statusCode})`);
-                        response.resume();
-                        return;
-                    }
-                    response.setEncoding("utf8");
-                    let rawData = '';
-                    response.on('data', (chunk) => { rawData += chunk; });
-                    response.on('end', () => {
-                        rawData = rawData.replaceAll('href="/style/', 'href="../style/')
-                        let dom = parser.parse(rawData);
-                        dom.querySelectorAll('iframe').forEach(x=> x.remove());
-                        dom.querySelectorAll('img').forEach(x=> x.remove());
-                        dom.querySelectorAll('script').forEach(x=> x.remove());
-                        // バージョンクエリ文字列を除去して不要な差分を防ぐ
-                        dom.querySelectorAll('link[href]').forEach(el => {
-                            const href = el.getAttribute('href');
-                            if (href) el.setAttribute('href', href.replace(/\?.*$/, ''));
-                        });
-                        fs.writeFileSync(name + ".html", dom.toString())
-                        dom.querySelectorAll('hr').forEach(x=> x.remove());
-                        fs.writeFileSync(name + ".txt", convert(dom.toString(), options))
-                        console.log(name)
-                    })
-                })
+                if (!fullMode && fs.existsSync(name + ".html") && name !== newestExisting) {
+                    console.log('skip: ' + name)
+                    return
+                }
+                queue.push({ path, name })
             })
-            console.log("room " + room_id + " page " + page + " done")
+            console.log(`room ${room_id} page ${page}: ${queue.length}件取得、${m.length - queue.length}件スキップ`)
             page += 100
-            if (m.length >= 100) {
-                setTimeout(() => {
+            const hasNextPage = m.length >= 100
+            processQueue(queue, () => {
+                if (hasNextPage) {
                     https.get(url(room_id, page), callback).on('error', errot_callback)
-                }, 60 * 1000)
-            } else {
-                if (doneCallback) doneCallback();
-            }
+                } else {
+                    if (doneCallback) doneCallback();
+                }
+            })
         });
     }
     https.get(url(room_id, page), callback).on('error', errot_callback);
 }
 
-const room_id = process.argv[2]
+const args = process.argv.slice(2);
+const fullMode = args.includes('--full');
+const room_id = args.find(a => !a.startsWith('-'));
 
 if (room_id) {
-    console.log(room_id)
-    processRoom(room_id)
+    console.log(room_id + (fullMode ? ' [full mode]' : ' [skip existing]'))
+    processRoom(room_id, null, fullMode)
 } else {
     // 既存のディレクトリからルームIDを収集して順番に処理する
     const dirs = fs.readdirSync('.').filter(f => {
@@ -98,7 +139,7 @@ if (room_id) {
         catch (e) { return false; }
     });
     const roomIds = [...new Set(dirs.map(d => d.match(/^\[(\d+)\]/)[1]))];
-    console.log('Found rooms: ' + roomIds.join(', '));
+    console.log('Found rooms: ' + roomIds.join(', ') + (fullMode ? ' [full mode]' : ' [skip existing]'));
 
     let i = 0;
     function next() {
@@ -108,7 +149,7 @@ if (room_id) {
         }
         const rid = roomIds[i++];
         console.log(`Processing room ${rid} (${i}/${roomIds.length})`);
-        processRoom(rid, () => setTimeout(next, 5000));
+        processRoom(rid, () => setTimeout(next, 5000), fullMode);
     }
     next();
 }
